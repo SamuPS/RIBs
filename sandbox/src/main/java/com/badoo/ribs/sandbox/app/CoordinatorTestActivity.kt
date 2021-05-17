@@ -2,15 +2,13 @@ package com.badoo.ribs.sandbox.app
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.badoo.ribs.android.integrationpoint.ActivityIntegrationPoint
 import com.badoo.ribs.core.Rib
 import com.badoo.ribs.core.modality.BuildContext
 import com.badoo.ribs.sandbox.R
-import com.badoo.ribs.sandbox.rib.tabs_container.TabsContainer
-import com.badoo.ribs.sandbox.rib.tabs_container.TabsContainerBuilder
-import com.badoo.ribs.sandbox.rib.tabs_container.TabsContainerViewImpl
+import com.badoo.ribs.sandbox.rib.tabs.TabsBuilder
+import com.badoo.ribs.sandbox.RootCoordinatorView
 
 class CoordinatorTestActivity : AppCompatActivity() {
 
@@ -24,8 +22,9 @@ class CoordinatorTestActivity : AppCompatActivity() {
             activity = this,
             savedInstanceState = savedInstanceState,
             rootViewHostFactory = {
-                TabsContainerViewImpl(
-                    androidView = findViewById(R.id.coordinatorroot)
+                RootCoordinatorView(
+                    androidView = findViewById(R.id.coordinatorroot),
+                    coordinatedContainerId = R.id.tabs_root
                 )
             }
         )
@@ -34,7 +33,7 @@ class CoordinatorTestActivity : AppCompatActivity() {
     }
 
     private fun createRib(savedInstanceState: Bundle?): Rib =
-        TabsContainerBuilder().build(buildContext = BuildContext.root(savedInstanceState))
+        TabsBuilder().build(buildContext = BuildContext.root(savedInstanceState))
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

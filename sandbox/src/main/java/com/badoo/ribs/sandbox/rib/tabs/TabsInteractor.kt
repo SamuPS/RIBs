@@ -2,27 +2,34 @@ package com.badoo.ribs.sandbox.rib.tabs
 
 import androidx.lifecycle.Lifecycle
 import com.badoo.mvicore.android.lifecycle.startStop
-import com.badoo.mvicore.binder.using
 import com.badoo.ribs.clienthelper.interactor.Interactor
 import com.badoo.ribs.core.modality.BuildParams
+import com.badoo.ribs.routing.source.backstack.BackStack
+import com.badoo.ribs.routing.source.backstack.operation.replace
+import com.badoo.ribs.sandbox.rib.tabs.TabsView.Event.Tab1Clicked
+import com.badoo.ribs.sandbox.rib.tabs.TabsView.Event.Tab2Clicked
+import com.badoo.ribs.sandbox.rib.tabs.routing.TabsRouter
+import com.badoo.ribs.sandbox.rib.tabs.routing.TabsRouter.Configuration.FirstTab
+import com.badoo.ribs.sandbox.rib.tabs.routing.TabsRouter.Configuration.SecondTab
+import io.reactivex.functions.Consumer
 
 internal class TabsInteractor(
-    buildParams: BuildParams<*>
+    buildParams: BuildParams<*>,
+    backStack: BackStack<TabsRouter.Configuration>
 ) : Interactor<Tabs, TabsView>(
     buildParams = buildParams
 ) {
 
     override fun onViewCreated(view: TabsView, viewLifecycle: Lifecycle) {
         viewLifecycle.startStop {
-            bind(view to rib.output using ViewEventToOutput)
+            bind(view to tabsOutputConsumer)
         }
     }
 
-    private object ViewEventToOutput : (TabsView.Event) -> Tabs.Output {
-        override fun invoke(event: TabsView.Event): Tabs.Output =
-            when (event) {
-                is TabsView.Event.Tab1Clicked -> Tabs.Output.Tab1Clicked
-                is TabsView.Event.Tab2Clicked -> Tabs.Output.Tab2Clicked
-            }
+    private val tabsOutputConsumer = Consumer<TabsView.Event> {
+        when (it) {
+            Tab1Clicked -> backStack.replace(FirstTab)
+            Tab2Clicked -> backStack.replace(SecondTab)
+        }
     }
 }
